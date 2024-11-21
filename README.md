@@ -98,7 +98,7 @@ python manage.py runserver
     ```
 
 ### Borrowing Routes
-- `GET /borrows/`: List borrows
+- `GET /borrows/`: List borrows (Admin can see all but Member can see only her/his list)
 - `POST /borrows/`: Create a new borrow
   - Body example:
     ```json
@@ -115,7 +115,7 @@ python manage.py runserver
 ## Borrowing Rules
 - Maximum 5 books can be borrowed at a time
 - 14-day borrowing period
-- ₹5 fine per day for overdue books
+- 5 taka fine per day for overdue books
 
 ## Postman Request Examples
 
