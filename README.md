@@ -21,7 +21,8 @@ This is a comprehensive Library Management System built with Django and Django R
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/Oyshik-ICT/BookBorrower.git
-cd library-management-system
+
+cd BookBorrower
 ```
 
 ### 2. Create a Virtual Environment
