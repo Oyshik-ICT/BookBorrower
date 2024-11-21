@@ -106,7 +106,7 @@ class FineSerializer(serializers.ModelSerializer):
     """
     Serializer for Fine model.
     """
-
+    
     class Meta:
         model = Fine
         fields = "__all__"
