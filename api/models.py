@@ -31,16 +31,16 @@ class Borrow(models.Model):
     borrow_at = models.DateTimeField(auto_now_add=True)
     return_deadline = models.DateTimeField(default=default_return_deadline)
 
+    @property
+    def is_overdue(self):
+        return now() > self.return_deadline
+
     def calculate_fines(self):
-        if now() > self.return_deadline:
+        if self.is_overdue:
             overdue_days = (now() - self.return_deadline).days
             fine_rate = 5
             return overdue_days * fine_rate
         return 0
-
-    @property
-    def is_overdue(self):
-        return now() > self.return_deadline
 
     def __str__(self):
         return f"Borrow ID: {self.borrow_id} - User: {self.user.username}"

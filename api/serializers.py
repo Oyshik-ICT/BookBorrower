@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from django.db.models import Count
 from rest_framework import serializers
 
@@ -5,17 +7,28 @@ from .models import Book, Borrow, Fine
 
 
 class BookSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Book model, includes validation for the price field.
+    """
+
     class Meta:
         model = Book
         fields = "__all__"
 
-    def validate_price(self, value):
+    def validate_price(self, value: int) -> int:
+        """
+        Validate that the price is greater than zero.
+        """
         if value <= 0:
             raise serializers.ValidationError("Price should be greater than zero")
         return value
 
 
 class BorrowSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Borrow model, handles borrowing logic and fine calculations.
+    """
+
     books = BookSerializer(many=True, read_only=True)
     book_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     fine_amount = serializers.SerializerMethodField()
@@ -41,19 +54,25 @@ class BorrowSerializer(serializers.ModelSerializer):
             "is_overdue",
         )
 
-    def get_fine_amount(self, obj):
+    def get_fine_amount(self, obj: Borrow) -> int:
+        """
+        Calculate the fine amount for a borrow instance.
+        """
         return obj.calculate_fines()
 
-    def create(self, validated_data):
-        book_ids = validated_data.pop("book_ids")
+    def create(self, validated_data: Dict) -> Borrow:
+        """
+        Create a new borrow instance and handle book stock updates.
+        """
+        book_ids: List[int] = validated_data.pop("book_ids")
 
         if len(book_ids) == 0:
-            raise serializers.ValidationError("I have to borrow more than zero book")
+            raise serializers.ValidationError("You have to borrow more than zero book")
 
         user = self.context["request"].user
 
         # Check borrow limit
-        current_borrows = (
+        current_borrows: int = (
             Borrow.objects.filter(user=user, books__isnull=False).aggregate(
                 total_books=Count("books")
             )["total_books"]
@@ -84,6 +103,10 @@ class BorrowSerializer(serializers.ModelSerializer):
 
 
 class FineSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Fine model.
+    """
+
     class Meta:
         model = Fine
         fields = "__all__"

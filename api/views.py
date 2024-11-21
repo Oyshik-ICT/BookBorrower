@@ -86,16 +86,8 @@ class FineViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class: FineSerializer = FineSerializer
-
-    def get_queryset(self) -> List[Fine]:
-        """
-        Retrieve fine records for staff users.
-        """
-        try:
-            if self.request.user.is_staff:
-                return Fine.objects.all()
-        except Exception as e:
-            print(f"Fine Queryset Error: {str(e)}")
+    queryset: List[Fine] = Fine.objects.all()
+    permission_classes: List[Any] = [IsAdminUser]
 
     @action(detail=True, methods=["post"])
     def pay(self, request: Request, pk: Optional[int] = None) -> Response:
